@@ -1,8 +1,9 @@
 const express = require("express")
 const dotenv = require("dotenv")
 const morgan = require("morgan")
+const exphbs = require("express-handlebars")
 const app = express()
-
+const indexRoute = require("./routes/index")
 const connectDB = require("./dbConnection/dbConnect")
 
 //load config
@@ -17,6 +18,13 @@ connectDB()
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"))
 }
+
+//handlebars
+app.engine(".hbs", exphbs({ defaultLayout: "main", extname: ".hbs" }))
+app.set("view engine", ".hbs")
+
+//routes
+app.use("/", indexRoute)
 
 //creating server
 app.listen(PORT, () => {
