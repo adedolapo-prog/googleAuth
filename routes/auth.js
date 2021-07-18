@@ -23,4 +23,13 @@ router.get(
   }
 )
 
+/**
+ * @desc logout user
+ * @route GET /auth/logout
+ */
+
+router.get("/logout", (req, res) => {
+  req.logout()
+  res.redirect("/")
+})
 module.exports = router
