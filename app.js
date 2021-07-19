@@ -5,9 +5,11 @@ const morgan = require("morgan")
 const passport = require("passport")
 const session = require("express-session")
 const exphbs = require("express-handlebars")
+const MongoStore = require("connect-mongo")
 const app = express()
 const indexRoute = require("./routes/index")
 const authRoute = require("./routes/auth")
+const storyRoute = require("./routes/stories")
 const connectDB = require("./dbConnection/dbConnect")
 
 //load config
@@ -17,6 +19,10 @@ dotenv.config({ path: "./config/config.env" })
 require("./dbConnection/passport")(passport)
 
 const PORT = process.env.PORT
+
+//parsing input
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 
 //connect DB
 connectDB()
@@ -36,6 +42,9 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+    }),
   })
 )
 
@@ -49,6 +58,7 @@ app.use(express.static(path.join(__dirname, "public")))
 //routes
 app.use("/", indexRoute)
 app.use("/auth", authRoute)
+app.use("/stories", storyRoute)
 
 //creating server
 app.listen(PORT, () => {
